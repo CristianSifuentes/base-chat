@@ -44,6 +44,7 @@ export class ChatService {
 
   getMessage(): FirebaseListObservable<ChatMessage[]> {
     //Query to create list
+    console.log('getting messages!!!');
     return this.db.list('messages', {
       query: {
         limitToLast: 25,
@@ -55,11 +56,11 @@ export class ChatService {
   getTimeStamp() {
     const now = new Date();
     const date = now.getUTCFullYear() + '/' +
-      (now.getUTCMonth() + 1) + '/' +
-      now.getUTCDate();
-    const time = now.getUTCHours + ':' +
-      now.getUTCMinutes + ':' +
-      now.getUTCSeconds();
+                 (now.getUTCMonth() + 1) + '/' +
+                 now.getUTCDate();
+    const time = now.getUTCHours() + ':' +
+                 now.getUTCMinutes() + ':' +
+                 now.getUTCSeconds();
 
     return (date + ' ' + time);
   }
