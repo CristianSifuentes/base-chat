@@ -9,7 +9,8 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class ChatService {
-  user: any;
+  /*user: any;*/
+  user: firebase.User;
   chatMessages: FirebaseListObservable<ChatMessage[]>;
   chatMessage: ChatMessage;
   userName: Observable<string>;
@@ -19,6 +20,15 @@ export class ChatService {
     private afAuth: AngularFireAuth
   ) {
 
+    this.afAuth.authState.subscribe(auth => {
+      if (auth !== undefined && auth !== null) {
+        this.user = auth;
+      }
+
+      this.getUser().subscribe(a => {
+        this.userName = a.displayName;
+      });
+    });
     /*this.afAuth.authState.subscribe(auth => {
       if (auth !== undefined && auth !== null) {
         this.user = auth;
@@ -26,16 +36,31 @@ export class ChatService {
     });*/
   }
 
+  getUser() {
+    const userId = this.user.uid;
+    const path = `/users/${userId}`;
+    return this.db.object(path);
+  }
+
+  getUsers() {
+    const path = '/users';
+    return this.db.list(path);
+
+  }
+
   sendMessage(msg: string) {
     const timestamp = this.getTimeStamp();
-    /*const email = this.user.email;*/
-    const email = 'test@example.com';
+    console.log('timestamp' + timestamp);
+    const email = this.user.email;
+    console.log('email' + email);
+    /*const email = 'test@example.com';*/
+   console.log('antes de chatMessages');
     this.chatMessages = this.getMessage();
     this.chatMessages.push({
       message: msg,
       timeSent: timestamp,
-      /*userName: this.userName,*/
-      userName: 'test-user',
+      userName: this.userName,
+      /*userName: 'test-user',*/
       email: email
     });
     console.log('in sendMessage');
@@ -56,11 +81,11 @@ export class ChatService {
   getTimeStamp() {
     const now = new Date();
     const date = now.getUTCFullYear() + '/' +
-                 (now.getUTCMonth() + 1) + '/' +
-                 now.getUTCDate();
+      (now.getUTCMonth() + 1) + '/' +
+      now.getUTCDate();
     const time = now.getUTCHours() + ':' +
-                 now.getUTCMinutes() + ':' +
-                 now.getUTCSeconds();
+      now.getUTCMinutes() + ':' +
+      now.getUTCSeconds();
 
     return (date + ' ' + time);
   }

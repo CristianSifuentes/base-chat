@@ -17,6 +17,7 @@ export class ChatFormComponent implements OnInit {
   }
 
   send() {
+    console.log('entro al método en el legn');
     this.chat.sendMessage(this.message);
     this.message = '';
   }
